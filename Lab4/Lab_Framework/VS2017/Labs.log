@@ -1,0 +1,9 @@
+﻿  lab04.cpp
+C:\Users\Mike Yabz\Desktop\Lab4\Lab_Framework\Source\lab04.cpp(431,25): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Mike Yabz\Desktop\Lab4\Lab_Framework\Source\lab04.cpp(450,18): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Mike Yabz\Desktop\Lab4\Lab_Framework\Source\lab04.cpp(575,62): warning C4244:  '-=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Mike Yabz\Desktop\Lab4\Lab_Framework\Source\lab04.cpp(576,62): warning C4244:  '-=': conversion from 'double' to 'float', possible loss of data
+LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+glew32s.lib(glew.obj) : warning LNK4099: PDB '㧀硳䁰硱Γ' was not found with 'glew32s.lib(glew.obj)' or at '㧀硳䁰硱Γ'; linking object as if no debug info
+  Labs.vcxproj -> C:\Users\Mike Yabz\Desktop\Lab4\Lab_Framework\VS2017\/../Bin/Labs-Debug.exe

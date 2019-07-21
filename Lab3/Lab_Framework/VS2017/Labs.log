@@ -1,0 +1,7 @@
+﻿  lab03.cpp
+C:\Users\Mike Yabz\Desktop\Lab3\Lab_Framework\Source\lab03.cpp(319,25): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Mike Yabz\Desktop\Lab3\Lab_Framework\Source\lab03.cpp(340,18): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+glew32s.lib(glew.obj) : warning LNK4099: PDB '㧀硳䁰硱Ћ' was not found with 'glew32s.lib(glew.obj)' or at '㧀硳䁰硱Ћ'; linking object as if no debug info
+  Labs.vcxproj -> C:\Users\Mike Yabz\Desktop\Lab3\Lab_Framework\VS2017\/../Bin/Labs-Debug.exe
