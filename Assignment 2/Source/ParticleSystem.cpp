@@ -13,6 +13,14 @@
 #include "EventManager.h"
 #include "World.h"
 
+#define WIN32_LEAN_AND_MEAN	//for debug
+#include <Windows.h>	//for debug
+#include "math.h"
+#include <string>
+#include <string.h>
+#include "string"
+#include "string.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/common.hpp>
@@ -94,20 +102,52 @@ void ParticleSystem::Update(float dt)
 
         // ...
 
+		
 		/*
 		float angle = EventManager::GetRandomFloat(0, mpDescriptor->velocityAngleRandomness);
-		double perpendicularVariation = (tan(angle) * newParticle->velocity.y);
+		double perpendicularVariation = (tan(angle) * newParticle->velocity.y/14);
 
 		double coneRotationAngle = EventManager::GetRandomFloat(0, 360);
 		double newZ = sin(coneRotationAngle) * perpendicularVariation;
 		double newX = cos(coneRotationAngle) * perpendicularVariation;
-		*/
-		/*
+		
+		
 		newParticle->velocity.z = newZ;
 		newParticle->velocity.x = newX;
 		*/
 
 
+
+
+		//************ need to do All rotations around unit vectors or else x and z could get massive velocities that acceleration cant counteract
+
+		//mpDescriptor->velocity.x = 10.0f;  //test case
+		
+		//char buffer[100];
+		float magnitude = sqrt(pow(mpDescriptor->velocity.x,2)+ pow(mpDescriptor->velocity.y, 2)+ pow(mpDescriptor->velocity.z, 2));	//find magnitude of velocity
+		vec3 velocityVector = mpDescriptor->velocity / magnitude;	//make unit vector from velocity, need to do this or everythign breaks if using regular velocity vector
+		vec3 normalLine = cross(velocityVector, vec3(EventManager::GetRandomFloat(0,1.0), EventManager::GetRandomFloat(0, 1.0), EventManager::GetRandomFloat(0, 1.0)));	//find axis perpendicular to velocity by crossing with random vector
+		float normalMagnitude = sqrt(pow(normalLine.x, 2) + pow(normalLine.y, 2) + pow(normalLine.z, 2));	//find magnitude of velocity
+		//sprintf_s(buffer, "before x: %f y: %f z: %f mag:%f \n", normalLine.x, normalLine.y, normalLine.z, normalMagnitude);
+		//OutputDebugStringA(buffer);		
+		normalLine /= normalMagnitude;
+		//normalMagnitude = sqrt(pow(normalLine.x, 2) + pow(normalLine.y, 2) + pow(normalLine.z, 2));	//find magnitude of velocity
+		//sprintf_s(buffer, "after x: %f y: %f z: %f mag:%f \n\n",normalLine.x,normalLine.y,normalLine.z,normalMagnitude);
+		//OutputDebugStringA(buffer);
+
+		//Part 1
+		float perpendicularAngle = EventManager::GetRandomFloat(0, mpDescriptor->velocityAngleRandomness);	//find random angle 
+		glm::mat4 rotationPerpendicular = glm::mat4_cast(angleAxis(radians(perpendicularAngle), normalLine));	//make rotation matrix to rotate around perpendicular axis
+		vec3 offsetVector = vec4(newParticle->velocity, 0.0f) * rotationPerpendicular;	//calculate new velocity vector rotated around perpendicular axis
+
+		//Part 2
+		float conicalAngle = EventManager::GetRandomFloat(0, 360);	//get random angle
+		glm::mat4 rotationConical = glm::mat4_cast(angleAxis(radians(conicalAngle), velocityVector));	//make rotation matrix to rotate around velocity vector in cone shape
+		newParticle->velocity = vec4(offsetVector, 0.0f) * rotationConical; //rotate in cone shape
+		
+
+
+		/*
 		//Part 1
 		float perpendicularAngle = EventManager::GetRandomFloat(0, mpDescriptor->velocityAngleRandomness);
 		glm::mat4 rotationPerpendicular = glm::mat4_cast(angleAxis(radians(perpendicularAngle), vec3(0.0f,0.0f,1.0f)));
@@ -115,25 +155,8 @@ void ParticleSystem::Update(float dt)
 
 		//Part 2
 		float conicalAngle = EventManager::GetRandomFloat(0, 360);
-		glm::mat4 rotationConical = glm::mat4_cast(angleAxis(radians(conicalAngle), vec3(0.0f, 1.0f, 0.0f)));
+		glm::mat4 rotationConical = glm::mat4_cast(angleAxis(radians(conicalAngle), vec3(0.0f,1.0f,0.0f)));
 		newParticle->velocity = vec4(offsetVector,0.0f) * rotationConical;
-		
-		
-		//newParticle->velocity = vec4(newParticle->velocity, 0.0f) * rotationConical;
-
-		//glm::quat rot = glm::angleAxis(glm::radians(angle_in_degrees), glm::vec3(x, y, z));
-		/*
-		glm::mat4 transform = glm::eulerAngleYXZ(euler.y, euler.x, euler.z);
-		glm::vec4 rotation = vec4(0.0f, 0.0f, 1.0f, 0.0f);
-		glm::mat4 rotMat = (0.0f);
-		*/
-		/*
-		mat4 rotationMatrix(0.0f);
-		rotationMatrix[0][1] = newParticle->velocity.x;
-		rotationMatrix[0][2] = newParticle->velocity.y;
-		rotationMatrix[0][3] = newParticle->velocity.z;
-		vec3 temp = rotate(rotationMatrix,EventManager::GetRandomFloat(0,mpDescriptor->velocityAngleRandomness),vec3(0.0f,0.0f,1.0f));
-		////newParticle->velocity.x = 1.0f;
 		*/
 
     }
@@ -159,7 +182,7 @@ void ParticleSystem::Update(float dt)
         
         // ...
 
-		p->velocity = p->velocity + dt * mpDescriptor->acceleration;
+		p->velocity += dt * mpDescriptor->acceleration;
 		p->billboard.size += dt * mpDescriptor->sizeGrowthVelocity;
 
 
