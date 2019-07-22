@@ -30,13 +30,23 @@ glm::vec3 ParticleEmitter::GetPosition()
     //
     // Return the position where the particle is emitted.
     // If the emitter is parented, the position is relative to its parent
-	glm::vec3 position;
+	glm::vec3 position = vec3(0.0f,0.0f,0.0f);
 	//position = mpParent->GetPosition();
 
-	position.x = mpParent->GetWorldMatrix()[3][0];
-	position.y = mpParent->GetWorldMatrix()[3][1];
-	position.z = mpParent->GetWorldMatrix()[3][2];
+	//position = vec3(mpParent->GetWorldMatrix()[3][0], mpParent->GetWorldMatrix()[3][1], mpParent->GetWorldMatrix()[3][2]);
+
+	if (mpParent != nullptr)
+	{
+		position.x = mpParent->GetWorldMatrix()[3][0];
+		position.y = mpParent->GetWorldMatrix()[3][1];
+		position.z = mpParent->GetWorldMatrix()[3][2];
+	}
+	//Renderer::GetCurrentShader().;	
 	
+	
+	//gl_PerVertex.
+		//gl_Position;
+
 	/*
 	GLuint WorldMatrixLocation = glGetUniformLocation(Renderer::GetShaderProgramID(), "WorldTransform");
 	position.x = getWorldTransform[0][0];

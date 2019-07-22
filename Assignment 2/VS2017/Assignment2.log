@@ -1,3 +1,0 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(452,5): warning MSB8028: The intermediate directory (C:\Users\Mike Yabz\Documents\COMP371\Assignment 2\VS2017\/../Build/Debug/) contains files shared from another project (Assignment1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  ParticleSystem.cpp
-  Assignment2.vcxproj -> C:\Users\Mike Yabz\Documents\COMP371\Assignment 2\VS2017\/../Bin/Assignment2-Debug.exe

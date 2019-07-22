@@ -11,9 +11,12 @@
 #include "World.h"
 #include "Camera.h"
 
+#define WIN32_LEAN_AND_MEAN	//for debug
+#include <Windows.h>	//for debug
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/common.hpp>
-
+#include <glm/gtx/quaternion.hpp>
 
 using namespace std;
 using namespace glm;
@@ -164,55 +167,66 @@ void BillboardList::Update(float dt)
         
         // Normals
 
-		vec3 lookAt = normalize(vec3(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2]));
-		//glm::mat4 v = rotate(viewMatrix, b->angle, lookAt);
-		
-		glm::mat4 v = viewMatrix;
-		vec3 right = vec3(v[0][0], v[1][0], v[2][0]);
-		vec3 up = vec3(v[0][1], v[1][1], v[2][1]);
+		vec3 lookAt = vec3(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2]); //pull values from view Matrix right columns
 
+		vec3 vecA = vec3(b->position.x + 0.5, b->position.y + 0.5, b->position.z) - vec3(b->position.x, b->position.y, b->position.z); //vector from center to top-left corner
+		vec3 vecB = vec3(b->position.x - 0.5, b->position.y + 0.5, b->position.z) - vec3(b->position.x, b->position.y, b->position.z); //vector from center to top-right corner
+		vec3 billboardNormal = normalize(cross(vecA, vecB));	//calculate normal by crossing 2 axis, should be (0,0,1) for these billboards
+		float rotationAngle = dot(lookAt, billboardNormal);	//calculate angle between lookAt and billboard normal
 
+		glm::mat4 rotationMatrix = glm::mat4_cast(angleAxis(radians(rotationAngle), normalize(lookAt)));	//make rotation matrix to rotate
+		vec3 right = vec4(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0], 0.0f) * rotationMatrix; //rotate right vector
+		vec3 up = vec4(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1], 0.0f) * rotationMatrix; //rotate up vector
 		
-		mVertexBuffer[firstVertexIndex].normal = mVertexBuffer[firstVertexIndex + 1].normal = mVertexBuffer[firstVertexIndex + 2].normal = mVertexBuffer[firstVertexIndex + 3].normal = mVertexBuffer[firstVertexIndex + 4].normal = mVertexBuffer[firstVertexIndex + 5].normal = lookAt;// vec3(1.0f, 1.0f, 1.0f); //World::GetInstance()->GetCurrentCamera()->GetViewMatrix. //vec3(0.0f, 1.0f, 0.0f); // wrong...        
+		/*
+		char buffer[100];
+		sprintf(buffer, "x: %f y:%f z:%f \n", billboardNormal.x, billboardNormal.y, billboardNormal.z);
+		OutputDebugStringA(buffer);
+		*/
+
+			//***** Calculate new vertices
+		vec3 vertexPosition0 = b->position + ((-0.5f) * b->size.x * right) + ((0.5f) * b->size.y * up);
+		vec3 vertexPosition1 = b->position + ((-0.5f) * b->size.x * right) + ((-0.5f) * b->size.y * up);
+		vec3 vertexPosition2 = b->position + ((0.5f) * b->size.x * right) + ((0.5f) * b->size.y * up);
+		vec3 vertexPosition3 = b->position + ((0.5f) * b->size.x * right) + ((0.5f) * b->size.y * up);
+		vec3 vertexPosition4 = b->position + ((-0.5f) * b->size.x * right) + ((-0.5f) * b->size.y * up);
+		vec3 vertexPosition5 = b->position + ((0.5f) * b->size.x * right) + ((-0.5f) * b->size.y * up);
+
+		vec3 normal = cross((vertexPosition2 - b->position), (vertexPosition0 - b->position));	//make 2 vectors from the center to the corners, crossing them gives the normal of the billboard plane, right hand rule is important to ensure proper z direction
+		mVertexBuffer[firstVertexIndex].normal = mVertexBuffer[firstVertexIndex + 1].normal = mVertexBuffer[firstVertexIndex + 2].normal = mVertexBuffer[firstVertexIndex + 3].normal = mVertexBuffer[firstVertexIndex + 4].normal = mVertexBuffer[firstVertexIndex + 5].normal = normal;
 
 		// First triangle
 		// Top left
-		vec3 vertexPosition0 = b->position + ((-0.5f) * b->size.x * right) + ((0.5f) * b->size.y * up);
 		mVertexBuffer[firstVertexIndex].position.x = vertexPosition0[0];
 		mVertexBuffer[firstVertexIndex].position.y = vertexPosition0[1];
 		mVertexBuffer[firstVertexIndex].position.z = vertexPosition0[2];
 
 		// Bottom Left
-		vec3 vertexPosition1 = b->position + ((-0.5f) * b->size.x * right) + ((-0.5f) * b->size.y * up);
 		mVertexBuffer[firstVertexIndex + 1].position.x = vertexPosition1[0];
 		mVertexBuffer[firstVertexIndex + 1].position.y = vertexPosition1[1];
 		mVertexBuffer[firstVertexIndex + 1].position.z = vertexPosition1[2];
 
 		// Top Right
-		vec3 vertexPosition2 = b->position + ((0.5f) * b->size.x * right) + ((0.5f) * b->size.y * up);
 		mVertexBuffer[firstVertexIndex + 2].position.x = vertexPosition2[0];
 		mVertexBuffer[firstVertexIndex + 2].position.y = vertexPosition2[1];
 		mVertexBuffer[firstVertexIndex + 2].position.z = vertexPosition2[2];
 
 		// Second Triangle
 		// Top Right
-		vec3 vertexPosition3 = b->position + ((0.5f) * b->size.x * right) + ((0.5f) * b->size.y * up);
 		mVertexBuffer[firstVertexIndex + 3].position.x = vertexPosition3[0];
 		mVertexBuffer[firstVertexIndex + 3].position.y = vertexPosition3[1];
 		mVertexBuffer[firstVertexIndex + 3].position.z = vertexPosition3[2];
 
-		// Bottom Left
-		vec3 vertexPosition4 = b->position + ((-0.5f) * b->size.x * right) + ((-0.5f) * b->size.y * up);
+		// Bottom Left	
 		mVertexBuffer[firstVertexIndex + 4].position.x = vertexPosition4[0];
 		mVertexBuffer[firstVertexIndex + 4].position.y = vertexPosition4[1];
 		mVertexBuffer[firstVertexIndex + 4].position.z = vertexPosition4[2];
 
 		// Bottom Right
-		vec3 vertexPosition5 = b->position + ((0.5f) * b->size.x * right) + ((-0.5f) * b->size.y * up);
 		mVertexBuffer[firstVertexIndex + 5].position.x = vertexPosition5[0];
 		mVertexBuffer[firstVertexIndex + 5].position.y = vertexPosition5[1];
 		mVertexBuffer[firstVertexIndex + 5].position.z = vertexPosition5[2];
-        
+
         // do not touch this...
         firstVertexIndex += 6;
     }

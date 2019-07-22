@@ -103,19 +103,21 @@ void ParticleSystem::Update(float dt)
         // ...
 
 		
+		
+		///******Gives same result, less legit method
+
 		/*
-		float angle = EventManager::GetRandomFloat(0, mpDescriptor->velocityAngleRandomness);
-		double perpendicularVariation = (tan(angle) * newParticle->velocity.y/14);
+		float angle = EventManager::GetRandomFloat(0, mpDescriptor->velocityAngleRandomness);		
+		float perpendicularVariation = (sin(radians(angle)) * newParticle->velocity.y);
 
 		double coneRotationAngle = EventManager::GetRandomFloat(0, 360);
-		double newZ = sin(coneRotationAngle) * perpendicularVariation;
-		double newX = cos(coneRotationAngle) * perpendicularVariation;
-		
+		double newZ = sin(radians(coneRotationAngle)) * perpendicularVariation;
+		double newX = cos(radians(coneRotationAngle)) * perpendicularVariation;		
 		
 		newParticle->velocity.z = newZ;
 		newParticle->velocity.x = newX;
+		newParticle->velocity.y = (cos(radians(angle)) * newParticle->velocity.y);
 		*/
-
 
 
 
@@ -123,30 +125,23 @@ void ParticleSystem::Update(float dt)
 
 		//mpDescriptor->velocity.x = 10.0f;  //test case
 		
-		//char buffer[100];
-		float magnitude = sqrt(pow(mpDescriptor->velocity.x,2)+ pow(mpDescriptor->velocity.y, 2)+ pow(mpDescriptor->velocity.z, 2));	//find magnitude of velocity
-		vec3 velocityVector = mpDescriptor->velocity / magnitude;	//make unit vector from velocity, need to do this or everythign breaks if using regular velocity vector
-		vec3 normalLine = cross(velocityVector, vec3(EventManager::GetRandomFloat(0,1.0), EventManager::GetRandomFloat(0, 1.0), EventManager::GetRandomFloat(0, 1.0)));	//find axis perpendicular to velocity by crossing with random vector
-		float normalMagnitude = sqrt(pow(normalLine.x, 2) + pow(normalLine.y, 2) + pow(normalLine.z, 2));	//find magnitude of velocity
-		//sprintf_s(buffer, "before x: %f y: %f z: %f mag:%f \n", normalLine.x, normalLine.y, normalLine.z, normalMagnitude);
-		//OutputDebugStringA(buffer);		
-		normalLine /= normalMagnitude;
-		//normalMagnitude = sqrt(pow(normalLine.x, 2) + pow(normalLine.y, 2) + pow(normalLine.z, 2));	//find magnitude of velocity
-		//sprintf_s(buffer, "after x: %f y: %f z: %f mag:%f \n\n",normalLine.x,normalLine.y,normalLine.z,normalMagnitude);
-		//OutputDebugStringA(buffer);
+		
+		vec3 normalLine = cross(mpDescriptor->velocity, vec3(EventManager::GetRandomFloat(0.1,1.0), EventManager::GetRandomFloat(0.1, 1.0), EventManager::GetRandomFloat(0.1, 1.0)));	//find axis perpendicular to velocity by crossing with random vector
 
 		//Part 1
 		float perpendicularAngle = EventManager::GetRandomFloat(0, mpDescriptor->velocityAngleRandomness);	//find random angle 
-		glm::mat4 rotationPerpendicular = glm::mat4_cast(angleAxis(radians(perpendicularAngle), normalLine));	//make rotation matrix to rotate around perpendicular axis
+		glm::mat4 rotationPerpendicular = glm::mat4_cast(angleAxis(radians(perpendicularAngle), normalize(normalLine)));	//make rotation matrix to rotate around normalized perpendicular axis
 		vec3 offsetVector = vec4(newParticle->velocity, 0.0f) * rotationPerpendicular;	//calculate new velocity vector rotated around perpendicular axis
 
 		//Part 2
 		float conicalAngle = EventManager::GetRandomFloat(0, 360);	//get random angle
-		glm::mat4 rotationConical = glm::mat4_cast(angleAxis(radians(conicalAngle), velocityVector));	//make rotation matrix to rotate around velocity vector in cone shape
+		glm::mat4 rotationConical = glm::mat4_cast(angleAxis(radians(conicalAngle), normalize(mpDescriptor->velocity)));	//make rotation matrix to rotate around normalized velocity vector in cone shape
 		newParticle->velocity = vec4(offsetVector, 0.0f) * rotationConical; //rotate in cone shape
 		
 
 
+
+			//*****No velocity axis calculations
 		/*
 		//Part 1
 		float perpendicularAngle = EventManager::GetRandomFloat(0, mpDescriptor->velocityAngleRandomness);
