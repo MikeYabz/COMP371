@@ -167,14 +167,15 @@ void BillboardList::Update(float dt)
         
         // Normals
 
-		vec3 lookAt = vec3(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2]); //pull values from view Matrix right columns
+		vec3 lookAt = vec3(viewMatrix[0][2], viewMatrix[1][2], viewMatrix[2][2]); //pull values from view Matrix forward column
 
+		/*
 		vec3 vecA = vec3(b->position.x + 0.5, b->position.y + 0.5, b->position.z) - vec3(b->position.x, b->position.y, b->position.z); //vector from center to top-left corner
 		vec3 vecB = vec3(b->position.x - 0.5, b->position.y + 0.5, b->position.z) - vec3(b->position.x, b->position.y, b->position.z); //vector from center to top-right corner
 		vec3 billboardNormal = normalize(cross(vecA, vecB));	//calculate normal by crossing 2 axis, should be (0,0,1) for these billboards
 		float rotationAngle = dot(lookAt, billboardNormal);	//calculate angle between lookAt and billboard normal
-
-		glm::mat4 rotationMatrix = glm::mat4_cast(angleAxis(radians(rotationAngle), normalize(lookAt)));	//make rotation matrix to rotate
+		*/
+		glm::mat4 rotationMatrix = glm::mat4_cast(angleAxis(radians(b->angle), normalize(lookAt)));	//make rotation matrix to rotate
 		vec3 right = vec4(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0], 0.0f) * rotationMatrix; //rotate right vector
 		vec3 up = vec4(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1], 0.0f) * rotationMatrix; //rotate up vector
 		
