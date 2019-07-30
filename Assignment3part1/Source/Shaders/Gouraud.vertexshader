@@ -1,0 +1,41 @@
+#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexNormal_modelspace;  // You will need this when you do lighting
+layout(location = 2) in vec3 vertexColor; 
+
+// output to Fragment Shader
+out vec3 v_color;
+
+// Uniform
+// Values that stay constant for the whole mesh.
+uniform mat4 WorldTransform;
+uniform mat4 ViewTransform;
+uniform mat4 ProjectonTransform;
+
+
+// Light and Material Uniform Variables
+uniform vec4 WorldLightPosition; // if w = 1: Point light, if w = 0: directional light
+uniform vec4 materialCoefficients; // x: ambient   y: diffuse   z: specular   w: specular exponent
+
+uniform vec3 lightColor;
+uniform vec3 lightAttenuation; // x: kC  y: kL  z: kQ
+
+void main()
+{
+	mat4 MV = ViewTransform * WorldTransform;
+	mat4 MVP = ProjectonTransform * MV;
+
+	// Output position of the vertex, in clip space : MVP * position
+	gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
+	v_color = vertexColor;
+
+
+	// Implement Gouraud shading here...
+	// ...
+
+
+	// This should be the final color on the Vertex, including the lighting
+	v_color =  vertexColor;
+}
