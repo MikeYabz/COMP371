@@ -46,6 +46,6 @@ void main()
 	vec3 specular = materialCoefficients.z * spec * lightColor;  
 
 		//Sum
-	color = (ambient + ((diffuse + specular)* attenuationFactor)) * v_color;
+	color = (ambient + diffuse + specular) * v_color;
 	
 }
