@@ -102,8 +102,8 @@ int main( void )
 	glBindVertexArray(VertexArrayID);
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("../Source/Shaders/Phong.vertexshader", "../Source/Shaders/Phong.fragmentshader");
-//	GLuint programID = LoadShaders("../Source/Shaders/Gouraud.vertexshader", "../Source/Shaders/Gouraud.fragmentshader");
+	//GLuint programID = LoadShaders("../Source/Shaders/Phong.vertexshader", "../Source/Shaders/Phong.fragmentshader");
+	GLuint programID = LoadShaders("../Source/Shaders/Gouraud.vertexshader", "../Source/Shaders/Gouraud.fragmentshader");
 
 
 	// Get a handle for our Transformation Matrices uniform

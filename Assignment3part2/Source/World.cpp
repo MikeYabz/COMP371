@@ -240,6 +240,10 @@ void World::Draw()
 	// Draw models
 	for (vector<Model*>::iterator it = mModel.begin(); it < mModel.end(); ++it)
 	{
+		(*it)->GetWorldMatrix();
+
+
+
 		(*it)->Draw();
 	}
 

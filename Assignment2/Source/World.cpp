@@ -206,6 +206,27 @@ void World::Draw()
 	mat4 VP = mCamera[mCurrentCamera]->GetViewProjectionMatrix();
 	glUniformMatrix4fv(VPMatrixLocation, 1, GL_FALSE, &VP[0][0]);
 
+
+	// Material Coefficients
+	const float ka = 0.2f;
+	const float kd = 0.8f;
+	const float ks = 0.2f;
+	const float n = 50.0f;
+
+	// Light Coefficients
+	const vec3 lightColor(1.0f, 1.0f, 1.0f);
+	const float lightKc = 0.05f;
+	const float lightKl = 0.02f;
+	const float lightKq = 0.002f;
+	const vec4 lightPosition(0.0f, 10.0f, 0.0f, 1.0f); // If w = 1.0f, we have a point light
+
+	std::string shaderPathPrefix = "../Assets/Shaders/";
+	GLuint programID;// = Renderer::LoadShaders(shaderPathPrefix + "SolidColor.vertexshader", shaderPathPrefix + "SolidColor.fragmentshader");
+	// Get a handle for Light Attributes uniform
+	GLuint LightPositionID;// = glGetUniformLocation(programID, "WorldLightPosition");
+	GLuint LightColorID;// = glGetUniformLocation(programID, "lightColor");
+	GLuint LightAttenuationID;// = glGetUniformLocation(programID, "lightAttenuation");
+
 	// Draw models
 	for (vector<Model*>::iterator it = mModel.begin(); it < mModel.end(); ++it)
 	{

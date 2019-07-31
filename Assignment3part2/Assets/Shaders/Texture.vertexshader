@@ -22,6 +22,8 @@ void main()
     gl_Position =  ViewProjectionTransform * WorldTransform * vec4(vertexPosition_modelspace, 1.0f);
 
     normal = vertexNormal_modelspace; // Does this need to be transformed when we pass it to the fragment shader?
+
+
 	v_color = vertexColor;
 	UV = vertexUV;
 }
