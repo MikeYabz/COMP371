@@ -26,12 +26,10 @@
 #include "ParticleEmitter.h"
 #include "ParticleSystem.h"
 
-
 using namespace std;
 using namespace glm;
 
 World* World::instance;
-
 
 World::World()
 {
@@ -206,48 +204,37 @@ void World::Draw()
 	mat4 VP = mCamera[mCurrentCamera]->GetViewProjectionMatrix();
 	glUniformMatrix4fv(VPMatrixLocation, 1, GL_FALSE, &VP[0][0]);
 
-	// Material Coefficients
-	const float ka = 0.2f;
-	const float kd = 0.8f;
-	const float ks = 0.2f;
-	const float n = 50.0f;
-
-	// Light Coefficients
-	const vec3 lightColor(1.0f, 1.0f, 1.0f);
-	const float lightKc = 0.05f;
-	const float lightKl = 0.02f;
-	const float lightKq = 0.002f;
-	const vec4 lightPosition(0.0f, 10.0f, 0.0f, 1.0f); // If w = 1.0f, we have a point light
 
 	std::string shaderPathPrefix = "../Assets/Shaders/";
-	GLuint programID;// = Renderer::LoadShaders(shaderPathPrefix + "SolidColor.vertexshader", shaderPathPrefix + "SolidColor.fragmentshader");
-	// Get a handle for Light Attributes uniform
-	GLuint LightPositionID;// = glGetUniformLocation(programID, "WorldLightPosition");
+	GLuint programID = Renderer::LoadShaders(shaderPathPrefix + "SolidColor.vertexshader", shaderPathPrefix + "SolidColor.fragmentshader");
+	GLuint LightPositionID;// = glGetUniformLocation(programID, "WorldLightPosition[0]");
 	GLuint LightColorID;// = glGetUniformLocation(programID, "lightColor");
 	GLuint LightAttenuationID;// = glGetUniformLocation(programID, "lightAttenuation");
-	GLuint MaterialID;// = glGetUniformLocation(programID, "materialCoefficients");
-	GLuint ViewMatrixID;// = glGetUniformLocation(programID, "MV");
+	for (int i = 0; i < lightSourcesWorldObject.lightSources.size(); i++)
+	{
+		char buf[40];
+		
+		std::string temp = "WorldLightPosition[" + std::to_string(i) + "]";
+		LightPositionID = glGetUniformLocation(programID, temp.c_str());
+		//std::string temp = "lightColor[" + std::to_string(1) + "]";
+		LightColorID = glGetUniformLocation(programID, "lightColor");
+		LightAttenuationID = glGetUniformLocation(programID, "lightAttenuation");
+		glUniform4f(LightPositionID, lightSourcesWorldObject.lightSources[i].position.x, lightSourcesWorldObject.lightSources[i].position.y, lightSourcesWorldObject.lightSources[i].position.z, lightSourcesWorldObject.lightSources[i].position.w);
+		glUniform3f(LightColorID, lightSourcesWorldObject.lightSources[i].color.x, lightSourcesWorldObject.lightSources[i].color.y, lightSourcesWorldObject.lightSources[i].color.z);
+		glUniform3f(LightAttenuationID, lightSourcesWorldObject.lightSources[i].coefficients.x, lightSourcesWorldObject.lightSources[i].coefficients.y, lightSourcesWorldObject.lightSources[i].coefficients.z);
+	}
+
+
 
 	// Draw models
 	for (vector<Model*>::iterator it = mModel.begin(); it < mModel.end(); ++it)
 	{
-		mat4 WorldMat = (*it)->GetWorldMatrix();
-		mat4 ViewMat = mCamera[mCurrentCamera]->GetViewMatrix();
-		string modelType;// = //(*it)->GetName();
-		programID = Renderer::LoadShaders(shaderPathPrefix + "SolidColor.vertexshader", shaderPathPrefix + "SolidColor.fragmentshader");
-		
-		LightPositionID = glGetUniformLocation(programID, "WorldLightPosition");
-		LightColorID = glGetUniformLocation(programID, "lightColor");
-		LightAttenuationID = glGetUniformLocation(programID, "lightAttenuation");
-		MaterialID = glGetUniformLocation(programID, "materialCoefficients");
+		GLuint ViewMatrixID;// = glGetUniformLocation(programID, "MV");
+		std::string shaderPathPrefix = "../Assets/Shaders/";
+		GLuint programID = Renderer::LoadShaders(shaderPathPrefix + "SolidColor.vertexshader", shaderPathPrefix + "SolidColor.fragmentshader");
 		ViewMatrixID = glGetUniformLocation(programID, "ViewTransform");
-
-		glUniform4f(LightPositionID, lightPosition.x, lightPosition.y, lightPosition.z, lightPosition.w);
-		glUniform3f(LightColorID, lightColor.r, lightColor.g, lightColor.b);
-		glUniform3f(LightAttenuationID, lightKc, lightKl, lightKq);
-		glUniform4f(MaterialID, ka, kd, ks, n);
+		mat4 ViewMat = mCamera[mCurrentCamera]->GetViewMatrix();
 		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMat[0][0]);
-
 		(*it)->Draw();
 	}
 
@@ -283,6 +270,7 @@ void World::Draw()
 	// Draw Billboards
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	mpBillboardList->Draw();
 	glDisable(GL_BLEND);
 
@@ -345,6 +333,16 @@ void World::LoadScene(const char* scene_path)
 				ParticleDescriptor* psd = new ParticleDescriptor();
 				psd->Load(iss);
 				AddParticleDescriptor(psd);
+			}
+			else if (result == "particledescriptor")
+			{
+				ParticleDescriptor* psd = new ParticleDescriptor();
+				psd->Load(iss);
+				AddParticleDescriptor(psd);
+			}
+			else if (result == "lightsource")
+			{
+				lightSourcesWorldObject.Load(iss);
 			}
 			else if (result.empty() == false && result[0] == '#')
 			{

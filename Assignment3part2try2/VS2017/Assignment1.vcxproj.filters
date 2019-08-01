@@ -48,6 +48,9 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="ClassDiagram1.cd" />
+    <None Include="..\Assets\Scenes\AnimatedSceneWithParticles.scene">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Renderer.cpp">
@@ -98,6 +101,9 @@
     <ClCompile Include="..\Source\TextureLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\LightSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Renderer.h">
@@ -146,6 +152,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\TextureLoader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\LightSource.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

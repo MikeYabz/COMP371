@@ -13,6 +13,7 @@
 #include "ParsingHelper.h"
 #include "Billboard.h"
 #include <vector>
+#include "LightSource.h"
 
 class Camera;
 class Model;
@@ -48,6 +49,8 @@ public:
 private:
     static World* instance;
     
+	LightSource lightSourcesWorldObject;
+
 	std::vector<Model*> mModel;
     std::vector<Animation*> mAnimation;
     std::vector<AnimationKey*> mAnimationKey;

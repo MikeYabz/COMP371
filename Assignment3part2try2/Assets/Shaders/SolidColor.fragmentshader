@@ -8,34 +8,39 @@ uniform vec3 lightAttenuation; // x: kC  y: kL  z: kQ
 // Ouput to fragment shader
 out vec3 color;
 
+int numberOfLights;
 in vec4 v_color;
 in vec3 normal; // You will need this when you do per-fragment lighting
 in vec3 eyeVector;       // Vector from the vertex to the Camera in View Space
-in vec4 lightVector;     // Vector from the vertex to the Light in View Space
+in vec4 lightVector[8];     // Vector from the vertex to the Light in View Space
 						 // Length of lightVector is the distance between light and vertex
 						 // if w = 1: Point light, if w = 0: directional light
 
 void main()
 {
 	// set the fragment color to the interpolated vertex color
-	//color = v_color.rgb;
+	color = vec3(0.0f,0.0f,0.0f);
 
-	vec4 normalizedLightVector = normalize(lightVector);
+	numberOfLights = 1;
 
-		//Ambient
-	vec3 ambient = materialCoefficients.x * lightColor;
+	for(int i=0;i<numberOfLights;i++)
+	{
+		vec4 normalizedLightVector = normalize(lightVector[i]);
 
-		//Diffuse
-	float diff = max(dot(normal, vec3(normalizedLightVector)), 0.0);
-	vec3 diffuse = materialCoefficients.y * diff * lightColor;
+			//Ambient
+		vec3 ambient = materialCoefficients.x * lightColor;
 
-		//Specular
-	vec3 reflectDir = normalize(reflect(vec3(lightVector), normal));  
-	float spec = pow(max(dot(-eyeVector, reflectDir), 0.0), materialCoefficients.w);
-	vec3 specular = materialCoefficients.z * spec * lightColor;  
+			//Diffuse
+		float diff = clamp(dot(normal, vec3(normalizedLightVector)), 0,1);
+	
+		vec3 diffuse = materialCoefficients.y * diff * lightColor;
+
+			//Specular
+		vec3 reflectDir = normalize(reflect(vec3(lightVector[i]), normal));  
+		float spec = pow(max(dot(-eyeVector, reflectDir), 0.0f), materialCoefficients.w);
+		vec3 specular = materialCoefficients.z * spec * lightColor; 
 
 		//Sum
-	color = (ambient + diffuse + specular) * v_color.rgb;
-
-
+		color += (ambient + diffuse + specular) * v_color.rgb;
+	}
 }

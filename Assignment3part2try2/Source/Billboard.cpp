@@ -241,7 +241,6 @@ void BillboardList::Update(float dt)
 void BillboardList::Draw()
 {
     Renderer::CheckForErrors();
-
     
     // Set current shader to be the Textured Shader
     ShaderType oldShader = (ShaderType)Renderer::GetCurrentShader();
@@ -256,7 +255,6 @@ void BillboardList::Draw()
     glActiveTexture(GL_TEXTURE0);
 
     Renderer::CheckForErrors();
-
     
     glBindTexture(GL_TEXTURE_2D, mTextureID);
     glUniform1i(textureLocation, 0);				// Set our Texture sampler to user Texture Unit 0
@@ -272,10 +270,50 @@ void BillboardList::Draw()
     mat4 VP = currentCamera->GetViewProjectionMatrix();
     glUniformMatrix4fv(VPMatrixLocation, 1, GL_FALSE, &VP[0][0]);
 
-    // Draw the Vertex Buffer
-    // Note this draws a unit Cube
-    // The Model View Projection transforms are computed in the Vertex Shader
-    glBindVertexArray(mVAO);
+	// Draw the Vertex Buffer
+	// Note this draws a unit Cube
+	// The Model View Projection transforms are computed in the Vertex Shader
+	glBindVertexArray(mVAO);
+
+
+
+	// Material Coefficients
+	const float ka = 0.2f;
+	const float kd = 0.8f;
+	const float ks = 0.2f;
+	const float n = 50.0f;
+
+	// Light Coefficients
+	const vec3 lightColor(1.0f, 1.0f, 1.0f);
+	const float lightKc = 0.05f;
+	const float lightKl = 0.02f;
+	const float lightKq = 0.002f;
+	const vec4 lightPosition(0.0f, 10.0f, 0.0f, 1.0f); // If w = 1.0f, we have a point light
+
+	GLuint LightPositionID;// = glGetUniformLocation(programID, "WorldLightPosition");
+	GLuint LightColorID;// = glGetUniformLocation(programID, "lightColor");
+	GLuint LightAttenuationID;// = glGetUniformLocation(programID, "lightAttenuation");
+	GLuint MaterialID;// = glGetUniformLocation(programID, "materialCoefficients");
+	GLuint ViewMatrixID;// = glGetUniformLocation(programID, "MV");
+
+	mat4 ViewMat = currentCamera->GetViewMatrix();	
+	GLuint programID = Renderer::GetShaderProgramID();
+
+	LightPositionID = glGetUniformLocation(programID, "WorldLightPosition");
+	LightColorID = glGetUniformLocation(programID, "lightColor");
+	LightAttenuationID = glGetUniformLocation(programID, "lightAttenuation");
+	ViewMatrixID = glGetUniformLocation(programID, "ViewTransform");
+
+	glUniform4f(LightPositionID, lightPosition.x, lightPosition.y, lightPosition.z, lightPosition.w);
+	glUniform3f(LightColorID, lightColor.r, lightColor.g, lightColor.b);
+	glUniform3f(LightAttenuationID, lightKc, lightKl, lightKq);
+	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMat[0][0]);
+
+	GLuint GLuintMaterialID = glGetUniformLocation(Renderer::GetShaderProgramID(), "materialCoefficients");
+	glUniform4f(GLuintMaterialID, ka,kd,ks,n);
+
+
+
     
     GLuint WorldMatrixLocation = glGetUniformLocation(Renderer::GetShaderProgramID(), "WorldTransform");
 

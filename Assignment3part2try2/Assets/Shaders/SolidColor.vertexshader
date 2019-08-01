@@ -10,12 +10,13 @@ uniform mat4 ViewProjectionTransform;
 uniform mat4 WorldTransform;
 uniform mat4 ViewTransform;
 // light position
-uniform vec4 WorldLightPosition; // if w = 1: Point light, if w = 0: directional light
+out int numberOfLights;
+uniform vec4 WorldLightPosition[8]; // if w = 1: Point light, if w = 0: directional light
 
 // Outputs to fragment shader
 out vec3 normal;  // You will need this when you do per-fragment lighting
 out vec3 eyeVector;       // Vector from the vertex to the Camera in View Space
-out vec4 lightVector;     // Vector from the vertex to the Light in View Space
+out vec4 lightVector[8];     // Vector from the vertex to the Light in View Space
 out vec4 v_color;
 
 void main()
@@ -26,7 +27,12 @@ void main()
 
 	normal = normalize(vec3(MV * vec4(vertexNormal_modelspace,0.0f)));
 	eyeVector = normalize(vec3(MV * vec4(ViewTransform[3][0] - vertexPosition_modelspace.x, ViewTransform[3][1] - vertexPosition_modelspace.y, ViewTransform[3][2] - vertexPosition_modelspace.z,0.0f)));
-	lightVector = MV * vec4(WorldLightPosition.x - vertexPosition_modelspace.x, WorldLightPosition.y - vertexPosition_modelspace.y, WorldLightPosition.z - vertexPosition_modelspace.z,0.0f);
+	vec4 vertexPositionWorldSpace = vec4(vertexPosition_modelspace.x, vertexPosition_modelspace.y, vertexPosition_modelspace.z,0.0f);
+	
+	for(int i=0;i<1;i++)
+	{
+		lightVector[i] = ViewTransform * (vec4(WorldLightPosition[i]) - (WorldTransform * vertexPositionWorldSpace));				//  (WorldLightPosition.x - vertexPosition_modelspace.x, WorldLightPosition.y - vertexPosition_modelspace.x, WorldLightPosition.z - vertexPosition_modelspace.z,0.0f);
+	}
 
 	//normal = vertexNormal_modelspace; // Does this need to be transformed when we pass it to the fragment shader?
 	v_color = vec4(vertexColor, 1.0f);

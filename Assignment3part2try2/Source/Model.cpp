@@ -15,6 +15,8 @@
 #include "ParticleSystem.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/common.hpp>
+#define WIN32_LEAN_AND_MEAN	//for debug
+#include <Windows.h>	//for debug
 
 using namespace std;
 using namespace glm;
@@ -127,6 +129,20 @@ bool Model::ParseLine(const std::vector<ci_string> &token)
             ParticleSystem* ps = new ParticleSystem(emitter, desc);
             World::GetInstance()->AddParticleSystem(ps);
         }
+		else if (token[0] == "materialProperty")
+		{
+			char buffer[100];
+			sprintf(buffer, "in \n");
+			OutputDebugStringA(buffer);
+
+			assert(token.size() > 4);
+			assert(token[1] == "=");
+
+			modelProperties.x = static_cast<float>(atof(token[2].c_str()));
+			modelProperties.y = static_cast<float>(atof(token[3].c_str()));
+			modelProperties.z = static_cast<float>(atof(token[4].c_str()));
+			modelProperties.w = static_cast<float>(atof(token[5].c_str()));
+		}
 		else
 		{
 			return false;

@@ -1343,6 +1343,41 @@ void SphereModel::Draw()
     GLuint WorldMatrixLocation = glGetUniformLocation(Renderer::GetShaderProgramID(), "WorldTransform"); 
     glUniformMatrix4fv(WorldMatrixLocation, 1, GL_FALSE, &GetWorldMatrix()[0][0]);
     
+
+
+	GLuint GLuintMaterialID = glGetUniformLocation(Renderer::GetShaderProgramID(), "materialCoefficients");
+	vec4 properties = GetModelProperties();
+	glUniform4f(GLuintMaterialID, properties[0], properties[1], properties[2], properties[3]);
+
+	// Light Coefficients
+	//const vec3 lightColor(1.0f, 1.0f, 1.0f);
+	//const float lightKc = 0.05f;
+	//const float lightKl = 0.02f;
+	//const float lightKq = 0.002f;
+	//const vec4 lightPosition(0.0f, 10.0f, 0.0f, 1.0f); // If w = 1.0f, we have a point light
+
+	std::string shaderPathPrefix = "../Assets/Shaders/";
+	GLuint programID;// = Renderer::LoadShaders(shaderPathPrefix + "SolidColor.vertexshader", shaderPathPrefix + "SolidColor.fragmentshader");
+	// Get a handle for Light Attributes uniform
+	GLuint LightPositionID;// = glGetUniformLocation(programID, "WorldLightPosition");
+	GLuint LightColorID;// = glGetUniformLocation(programID, "lightColor");
+	GLuint LightAttenuationID;// = glGetUniformLocation(programID, "lightAttenuation");
+	GLuint MaterialID;// = glGetUniformLocation(programID, "materialCoefficients");
+
+	//string modelType;// = //(*it)->GetName();
+	programID = Renderer::GetShaderProgramID();// LoadShaders(shaderPathPrefix + "SolidColor.vertexshader", shaderPathPrefix + "SolidColor.fragmentshader");
+
+	LightPositionID = glGetUniformLocation(programID, "WorldLightPosition");
+	LightColorID = glGetUniformLocation(programID, "lightColor");
+	LightAttenuationID = glGetUniformLocation(programID, "lightAttenuation");
+
+	//glUniform4f(LightPositionID, lightPosition.x, lightPosition.y, lightPosition.z, lightPosition.w);
+	//glUniform3f(LightColorID, lightColor.r, lightColor.g, lightColor.b);
+	//glUniform3f(LightAttenuationID, lightKc, lightKl, lightKq);
+
+
+
+
     // Draw the triangles !
     glDrawArrays(GL_TRIANGLE_STRIP, 0, numOfVertices);
 }
