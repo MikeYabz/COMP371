@@ -39,8 +39,8 @@ void main()
 	vec3 specular = materialCoefficients.z * spec * lightColor; 
 
 		//Sum
-	color = vec4((ambient + diffuse + specular),0.0f) * v_color * textureColor;
-
+		//color = vec4(1.0f,1.0f,0.0f,1.0f) * textureColor;
+	color = vec4((ambient + diffuse + specular),1.0f) * v_color * textureColor;
 
     // modulate texture color with vertex color
     //color = v_color * textureColor;

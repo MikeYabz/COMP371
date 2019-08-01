@@ -2,7 +2,7 @@
 
 // Light and Material Uniform Variables
 uniform vec4 materialCoefficients; // x: ambient   y: diffuse   z: specular   w: specular exponent
-uniform vec3 lightColor;
+uniform vec3 lightColor[8];
 uniform vec3 lightAttenuation; // x: kC  y: kL  z: kQ
 
 // Ouput to fragment shader
@@ -21,24 +21,23 @@ void main()
 	// set the fragment color to the interpolated vertex color
 	color = vec3(0.0f,0.0f,0.0f);
 
-	numberOfLights = 1;
 
-	for(int i=0;i<numberOfLights;i++)
+	for(int i=0;i<8;i++)
 	{
 		vec4 normalizedLightVector = normalize(lightVector[i]);
 
 			//Ambient
-		vec3 ambient = materialCoefficients.x * lightColor;
+		vec3 ambient = materialCoefficients.x * lightColor[i];
 
 			//Diffuse
 		float diff = clamp(dot(normal, vec3(normalizedLightVector)), 0,1);
 	
-		vec3 diffuse = materialCoefficients.y * diff * lightColor;
+		vec3 diffuse = materialCoefficients.y * diff * lightColor[i];
 
 			//Specular
 		vec3 reflectDir = normalize(reflect(vec3(lightVector[i]), normal));  
 		float spec = pow(max(dot(-eyeVector, reflectDir), 0.0f), materialCoefficients.w);
-		vec3 specular = materialCoefficients.z * spec * lightColor; 
+		vec3 specular = materialCoefficients.z * spec * lightColor[i]; 
 
 		//Sum
 		color += (ambient + diffuse + specular) * v_color.rgb;

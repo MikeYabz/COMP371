@@ -211,14 +211,13 @@ void World::Draw()
 	GLuint LightColorID;// = glGetUniformLocation(programID, "lightColor");
 	GLuint LightAttenuationID;// = glGetUniformLocation(programID, "lightAttenuation");
 	for (int i = 0; i < lightSourcesWorldObject.lightSources.size(); i++)
-	{
-		char buf[40];
-		
+	{		
 		std::string temp = "WorldLightPosition[" + std::to_string(i) + "]";
 		LightPositionID = glGetUniformLocation(programID, temp.c_str());
-		//std::string temp = "lightColor[" + std::to_string(1) + "]";
-		LightColorID = glGetUniformLocation(programID, "lightColor");
-		LightAttenuationID = glGetUniformLocation(programID, "lightAttenuation");
+		temp = "lightColor[" + std::to_string(i) + "]";
+		LightColorID = glGetUniformLocation(programID, temp.c_str());
+		temp = "lightAttenuation[" + std::to_string(i) + "]";
+		LightAttenuationID = glGetUniformLocation(programID, temp.c_str());
 		glUniform4f(LightPositionID, lightSourcesWorldObject.lightSources[i].position.x, lightSourcesWorldObject.lightSources[i].position.y, lightSourcesWorldObject.lightSources[i].position.z, lightSourcesWorldObject.lightSources[i].position.w);
 		glUniform3f(LightColorID, lightSourcesWorldObject.lightSources[i].color.x, lightSourcesWorldObject.lightSources[i].color.y, lightSourcesWorldObject.lightSources[i].color.z);
 		glUniform3f(LightAttenuationID, lightSourcesWorldObject.lightSources[i].coefficients.x, lightSourcesWorldObject.lightSources[i].coefficients.y, lightSourcesWorldObject.lightSources[i].coefficients.z);
